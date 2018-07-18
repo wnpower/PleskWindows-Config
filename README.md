@@ -14,9 +14,11 @@
 
  1. Abrir una consola Powershell y ejecutar:
 
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
-    $Url = "https://raw.githubusercontent.com/wnpower/PleskWindows-Config/master/install_pleskonyx.ps1"
-    $Output = "C:\Windows\Temp\install_pleskonyx.ps1"
-    $WebClient = New-Object System.Net.WebClient
-    $WebClient.DownloadFile( $url , $Output)
-    Invoke-Expression $Output
+```
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
+$Url = "https://raw.githubusercontent.com/wnpower/PleskWindows-Config/master/install_pleskonyx.ps1"
+$Output = "C:\Windows\Temp\install_pleskonyx.ps1"
+$WebClient = New-Object System.Net.WebClient
+$WebClient.DownloadFile( $url , $Output)
+Invoke-Expression $Output
+```
