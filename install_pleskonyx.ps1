@@ -76,6 +76,7 @@ echo "Configurando servidor..."
 & 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' --update -include-remote-databases false -forbid-subscription-rename true -forbid-create-dns-subzone true -min_password_strength strong
 & 'C:\Program Files (x86)\Plesk\bin\admin.exe' --update -multiple-sessions true
 & 'C:\Program Files (x86)\Plesk\bin\domain_restriction.exe' --enable
+& 'C:\Program Files (x86)\Plesk\bin\poweruser.exe' --off
 
 echo "Configurando IIS Pools..."
 & 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' --set-iis-app-pool-settings -cpu-usage-state true -cpu-usage-value 20 -cpu-usage-action Throttle
