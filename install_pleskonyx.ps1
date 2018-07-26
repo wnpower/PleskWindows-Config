@@ -129,11 +129,11 @@ Foreach-Object {
 echo "Configurando Backup..."
 echo "Descargando tarea programada..."
 $Url = "https://raw.githubusercontent.com/wnpower/PleskWindows-Config/master/Plesk%20Scheduler%20Task%20%23Domain%20Backup%20Scheduler%201.xml"
-$Output = "$ScriptDir\Plesk Scheduler Task #Domain Backup Scheduler 1.xml"
+$Output = "C:\Windows\Temp\Plesk Scheduler Task #Domain Backup Scheduler 1.xml"
 $WebClient = New-Object System.Net.WebClient
 $WebClient.DownloadFile( $url , $Output)
 
 & 'C:\Program Files (x86)\Plesk\bin\plesk.exe' "db" "INSERT INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',4,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',604800,1,1,0,NULL);"
-Register-ScheduledTask -Xml (get-content "$ScriptDir\Plesk Scheduler Task #Domain Backup Scheduler 1.xml" | out-string) -TaskName 'Plesk Scheduler Task #Domain Backup Scheduler 1' -User "SYSTEM"
+Register-ScheduledTask -Xml (get-content "C:\Windows\Temp\Plesk Scheduler Task #Domain Backup Scheduler 1.xml" | out-string) -TaskName 'Plesk Scheduler Task #Domain Backup Scheduler 1' -User "SYSTEM"
 
 echo "Finalizado!"
