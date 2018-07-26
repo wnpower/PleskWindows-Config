@@ -50,7 +50,7 @@ echo "Ejecutando instalador de Plesk..."
 $AdminPassword = Read-Host -Prompt 'Password usuario "Administrator" '
 
 echo "Configuración inicial Plesk..."
-& 'C:\Program Files (x86)\Plesk\bin\init_conf.exe' --init -name Administrator -passwd "$AdminPassword" -license_agreed true -admin_info_not_required true
+& 'C:\Program Files (x86)\Plesk\bin\init_conf.exe' -p -passwd "$AdminPassword" -license_agreed true -admin_info_not_required true
 
 echo "Instalando licencia..."
 Add-Content -Path 'C:\Program Files (x86)\Plesk\admin\conf\panel.ini' -Value "[license]"
