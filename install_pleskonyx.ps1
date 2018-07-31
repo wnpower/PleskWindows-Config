@@ -127,6 +127,11 @@ Foreach-Object {
 	$content | %{$_ -replace "^error_reporting.*","error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT"} | Set-Content $_.FullName
 }
 
+echo "Configurando timezone Horde Webmail..."
+$hordephpini = "C:\Program Files (x86)\Plesk\Webmail\horde\conf\php.ini"
+$content = Get-Content $hordephpini
+$content | %{$_ -replace "^date.timezone.*",'date.timezone = "America/Argentina/Buenos_Aires"'} | Set-Content $hordephpini
+
 echo "Configurando Backup..."
 echo "Descargando tarea programada..."
 $Url = "https://raw.githubusercontent.com/wnpower/PleskWindows-Config/master/Plesk%20Scheduler%20Task%20%23Domain%20Backup%20Scheduler%201.xml"
