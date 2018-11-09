@@ -82,9 +82,17 @@ echo "Configurando IIS Pools..."
 & 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' --set-iis-app-pool-settings -cpu-usage-state true -cpu-usage-value 20 -cpu-usage-action Throttle
 
 echo "Configurando Firewall..."
-netsh advfirewall firewall add rule name="MESMTPC.exe (MailEnable SMTP Connector)" dir=out program="%ProgramFiles% (x86)\Plesk\Mail Servers\Mail Enable\Bin64\MESMTPC.exe" protocol=tcp  action=allow
+if([System.IO.File]::Exists("$Env:Programfiles (x86)\Mail Enable\Bin64\MESMTPC.exe")){
+	netsh advfirewall firewall add rule name="MESMTPC.exe (MailEnable SMTP Connector)" dir=out program="%ProgramFiles% (x86)\Mail Enable\Bin64\MESMTPC.exe" protocol=tcp  action=allow
+
+}
+if([System.IO.File]::Exists("$Env:Programfiles (x86)\Plesk\Mail Servers\Mail Enable\Bin64\MESMTPC.exe")){
+        netsh advfirewall firewall add rule name="MESMTPC.exe (MailEnable SMTP Connector)" dir=out program="%ProgramFiles% (x86)\Plesk\Mail Servers\Mail Enable\Bin64\MESMTPC.exe" protocol=tcp  action=allow
+}
+
 netsh advfirewall firewall add rule name="Allow OUT TCP" dir=out remoteport="20,21,37,43,53,80,110,113,443,873,3306,1433,6363,5224,1688" protocol=tcp  action=allow
 netsh advfirewall firewall add rule name="Allow OUT UDP" dir=out remoteport="53" protocol=udp  action=allow
+netsh advfirewall firewall add rule name="Allow OUT ICMP" protocol=icmpv4:any,any dir=out action=allow
 netsh advfirewall set allprofiles firewallpolicy blockinbound,blockoutbound
 
 echo "Configurando mail..."
