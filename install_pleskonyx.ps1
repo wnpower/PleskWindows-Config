@@ -150,4 +150,28 @@ $WebClient.DownloadFile( $url , $Output)
 & 'C:\Program Files (x86)\Plesk\bin\plesk.exe' "db" "INSERT INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',4,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',604800,1,1,0,NULL);"
 Register-ScheduledTask -Xml (get-content "C:\Windows\Temp\Plesk Scheduler Task #Domain Backup Scheduler 1.xml" | out-string) -TaskName 'Plesk Scheduler Task #Domain Backup Scheduler 1' -User "SYSTEM"
 
+echo "Configurando SQL Server..."
+echo "Abriendo puerto 1433 (SQL Express)..."
+Import-Module "sqlps"
+
+$MachineObject = new-object ('Microsoft.SqlServer.Management.Smo.WMI.ManagedComputer') .
+
+$serverinstance = $MachineObject | select-object -expand ServerInstances | select-object -expand Name
+$ProtocolUri = "ManagedComputer[@Name='" + (get-item env:computername).Value + "']/ServerInstance[@Name='$serverinstance']/ServerProtocol"
+
+$tcp = $MachineObject.getsmoobject($ProtocolUri + "[@Name='Tcp']")
+$np = $MachineObject.getsmoobject($ProtocolUri + "[@Name='Np']")
+$sm = $MachineObject.getsmoobject($ProtocolUri + "[@Name='Sm']")
+
+$np.IsEnabled = $true
+$np.alter()
+$tcp.IsEnabled = $true
+$tcp.alter()
+
+$MachineObject.getsmoobject($tcp.urn.Value + "/IPAddress[@Name='IPAll']").IPAddressProperties[1].Value = "1433"
+$tcp.alter()
+
+Restart-Service -displayname "*MSSQLSERVER*" -Exclude "*Agent*"
+
+
 echo "Finalizado!"
