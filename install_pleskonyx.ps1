@@ -181,6 +181,8 @@ if ($ISVM) {
 
 	Stop-Service ParallelsHealthMonitor
 	Stop-Service ParallelsHealthNotifier
+
+	stop-process -name "Parallels.MonitorSrv" -force
 }
 
 echo "Finalizado!"
