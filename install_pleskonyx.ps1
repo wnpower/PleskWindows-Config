@@ -1,4 +1,5 @@
 $ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+$ISVM = (Get-WmiObject -Class Win32_ComputerSystem).Model | Select-String -Pattern "KVM|Virtual" -Quiet
 
 echo "Descargando instalador de Plesk..."
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
@@ -173,5 +174,13 @@ $tcp.alter()
 
 Restart-Service -displayname "*MSSQLSERVER*" -Exclude "*Agent*"
 
+if ($ISVM) {
+        echo "VM detectada, desactivando Health Monitor/Notifier porque consume mucho y se cuelga..."
+	Set-Service ParallelsHealthMonitor -StartupType Disabled
+	Set-Service ParallelsHealthNotifier -StartupType Disabled
+
+	Stop-Service ParallelsHealthMonitor
+	Stop-Service ParallelsHealthNotifier
+}
 
 echo "Finalizado!"
