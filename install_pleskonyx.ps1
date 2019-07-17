@@ -185,4 +185,12 @@ if ($ISVM) {
 	stop-process -name "Parallels.MonitorSrv" -force
 }
 
+echo "Configurando paquetes..."
+echo "Activando Lets Encrypt en paquete default..."
+& 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --add-custom-plan-item "Default Domain" -custom-plan-item-name "urn:ext:letsencrypt:plan-item-sdk:keep-secured"
+
+echo "Eliminando paquetes adicionales..."
+& 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --remove "Default Simple"
+& 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --remove "Unlimited"
+
 echo "Finalizado!"
