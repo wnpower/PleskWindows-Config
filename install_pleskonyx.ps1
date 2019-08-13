@@ -193,4 +193,14 @@ echo "Eliminando paquetes adicionales..."
 & 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --remove "Default Simple"
 & 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --remove "Unlimited"
 
+echo "Configurando MailEnable..."
+$hostname = [System.Net.Dns]::GetHostByName(($env:computerName)).HostName
+$dnsCGSetting = Get-DnsClientGlobalSetting
+
+Set-Itemproperty -path 'HKLM:\SOFTWARE\WOW6432Node\Mail Enable\Mail Enable\Connectors\SMTP' -Name 'Host Name' -value $hostname
+Set-Itemproperty -path 'HKLM:\SOFTWARE\WOW6432Node\Mail Enable\Mail Enable\Connectors\SMTP' -Name 'Local Domain Name' -value $dnsCGSetting.SuffixSearchList
+
+Restart-Service -Name "MailEnable SMTP Connector"
+
+
 echo "Finalizado!"
