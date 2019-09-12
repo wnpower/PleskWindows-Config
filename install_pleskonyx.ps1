@@ -19,7 +19,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component mysql-odbc `
 --install-component mylittleadmin `
 --install-component webalizer `
---install-component mssql2016 `
+--install-component mssql2017 `
 --install-component webmail `
 --install-component plesk-urlprotection `
 --install-component webdeploy `
