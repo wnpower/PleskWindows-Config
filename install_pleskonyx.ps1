@@ -81,6 +81,7 @@ echo "Configurando servidor..."
 
 echo "Configurando IIS Pools..."
 & 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' --set-iis-app-pool-settings -cpu-usage-state true -cpu-usage-value 20 -cpu-usage-action Throttle
+& 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' -u -idle-timeout 60
 
 echo "Configurando Firewall..."
 if([System.IO.File]::Exists("$Env:Programfiles (x86)\Mail Enable\Bin64\MESMTPC.exe")){
