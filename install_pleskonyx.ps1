@@ -1,3 +1,4 @@
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") # REFRESH PATH
 $ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 $ISVM = (Get-WmiObject -Class Win32_ComputerSystem).Model | Select-String -Pattern "KVM|Virtual" -Quiet
 
@@ -46,14 +47,17 @@ echo "Ejecutando instalador de Plesk..."
 --install-component git `
 --install-component letsencrypt
 
+$env:plesk_dir = [System.Environment]::GetEnvironmentVariable("plesk_dir") # REFRESH PLESK PATH
+$env:plesk_bin = [System.Environment]::GetEnvironmentVariable("plesk_bin") # REFRESH PLESK PATH
+
 $AdminPassword = Read-Host -Prompt 'Password usuario "Administrator" '
 
 echo "Configuración inicial Plesk..."
-& 'C:\Program Files (x86)\Plesk\bin\init_conf.exe' -p -passwd "$AdminPassword" -license_agreed true -admin_info_not_required true
+& "$env:plesk_bin\init_conf.exe" -p -passwd "$AdminPassword" -license_agreed true -admin_info_not_required true
 
 echo "Instalando licencia..."
-Add-Content -Path 'C:\Program Files (x86)\Plesk\admin\conf\panel.ini' -Value "[license]"
-Add-Content -Path 'C:\Program Files (x86)\Plesk\admin\conf\panel.ini' -Value "fileUpload = on"
+Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "[license]"
+Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "fileUpload = on"
 
 net stop plesksrv
 net start plesksrv
@@ -61,25 +65,25 @@ net start plesksrv
 Write-Host -NoNewLine 'En este punto instalá la licencia de Plesk (XML o key) usando el panel web y luego apretá enter...';
 $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
 
-#& 'C:\Program Files (x86)\Plesk\bin\license.exe' -i $License
+#& "$env:plesk_bin\license.exe" -i $License
 
 echo "Configurando Plesk..."
 
 echo "Configurando idioma..."
-& 'C:\Program Files (x86)\Plesk\bin\locales.exe' --set-default es-ES
+& "$env:plesk_bin\locales.exe" --set-default es-ES
 
 echo "Configurando links GUI..."
-& 'C:\Program Files (x86)\Plesk\bin\panel_gui.exe' -p -domain_registration true -cert_purchasing true
+& "$env:plesk_bin\panel_gui.exe" -p -domain_registration true -cert_purchasing true
 
 echo "Configurando servidor..."
-& 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' --update -include-remote-databases false -forbid-subscription-rename true -forbid-create-dns-subzone true -min_password_strength strong
-& 'C:\Program Files (x86)\Plesk\bin\admin.exe' --update -multiple-sessions true
-& 'C:\Program Files (x86)\Plesk\bin\domain_restriction.exe' --enable
-& 'C:\Program Files (x86)\Plesk\bin\poweruser.exe' --off
+& "$env:plesk_bin\server_pref.exe" --update -include-remote-databases false -forbid-subscription-rename true -forbid-create-dns-subzone true -min_password_strength strong
+& "$env:plesk_bin\admin.exe" --update -multiple-sessions true
+& "$env:plesk_bin\domain_restriction.exe" --enable
+& "$env:plesk_bin\poweruser.exe" --off
 
 echo "Configurando IIS Pools..."
-& 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' --set-iis-app-pool-settings -cpu-usage-state true -cpu-usage-value 20 -cpu-usage-action Throttle
-& 'C:\Program Files (x86)\Plesk\bin\server_pref.exe' -u -idle-timeout 60
+& "$env:plesk_bin\server_pref.exe" --set-iis-app-pool-settings -cpu-usage-state true -cpu-usage-value 20 -cpu-usage-action Throttle
+& "$env:plesk_bin\server_pref.exe" -u -idle-timeout 60
 
 echo "Configurando Firewall..."
 if([System.IO.File]::Exists("$Env:Programfiles (x86)\Mail Enable\Bin64\MESMTPC.exe")){
@@ -96,12 +100,12 @@ netsh advfirewall firewall add rule name="Allow OUT ICMP" protocol=icmpv4:any,an
 netsh advfirewall set allprofiles firewallpolicy blockinbound,blockoutbound
 
 echo "Configurando mail..."
-& 'C:\Program Files (x86)\Plesk\bin\mailserver.exe' --enable-outgoing-antispam
-& 'C:\Program Files (x86)\Plesk\bin\mailserver.exe' --set-outgoing-messages-subscription-limit 200
-& 'C:\Program Files (x86)\Plesk\bin\mailserver.exe' --set-outgoing-messages-domain-limit 200
-& 'C:\Program Files (x86)\Plesk\bin\mailserver.exe' --set-maps-zone "zen.spamhaus.org,bl.spamcop.net,b.barracudacentral.org"
-& 'C:\Program Files (x86)\Plesk\bin\mailserver.exe' --set-maps-status true
-& 'C:\Program Files (x86)\Plesk\bin\spamassassin.exe' --update-server -status true
+& "$env:plesk_bin\mailserver.exe" --enable-outgoing-antispam
+& "$env:plesk_bin\mailserver.exe" --set-outgoing-messages-subscription-limit 200
+& "$env:plesk_bin\mailserver.exe" --set-outgoing-messages-domain-limit 200
+& "$env:plesk_bin\mailserver.exe" --set-maps-zone "zen.spamhaus.org,bl.spamcop.net,b.barracudacentral.org"
+& "$env:plesk_bin\mailserver.exe" --set-maps-status true
+& "$env:plesk_bin\spamassassin.exe" --update-server -status true
 
 echo "Configurando php.ini..."
 Get-ChildItem "C:\Program Files (x86)\Plesk\Additional\" -Recurse -Filter "php.ini" |
@@ -147,7 +151,7 @@ $Output = "C:\Windows\Temp\Plesk Scheduler Task #Domain Backup Scheduler 1.xml"
 $WebClient = New-Object System.Net.WebClient
 $WebClient.DownloadFile( $url , $Output)
 
-& 'C:\Program Files (x86)\Plesk\bin\plesk.exe' "db" "INSERT INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',4,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',604800,1,1,0,NULL);"
+& "$env:plesk_bin\plesk.exe" "db" "INSERT INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',4,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',604800,1,1,0,NULL);"
 Register-ScheduledTask -Xml (get-content "C:\Windows\Temp\Plesk Scheduler Task #Domain Backup Scheduler 1.xml" | out-string) -TaskName 'Plesk Scheduler Task #Domain Backup Scheduler 1' -User "SYSTEM"
 
 echo "Configurando SQL Server..."
@@ -186,11 +190,11 @@ if ($ISVM) {
 
 echo "Configurando paquetes..."
 echo "Activando Lets Encrypt en paquete default..."
-& 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --add-custom-plan-item "Default Domain" -custom-plan-item-name "urn:ext:letsencrypt:plan-item-sdk:keep-secured"
+& "$env:plesk_bin\service_plan.exe" --add-custom-plan-item "Default Domain" -custom-plan-item-name "urn:ext:letsencrypt:plan-item-sdk:keep-secured"
 
 echo "Eliminando paquetes adicionales..."
-& 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --remove "Default Simple"
-& 'C:\Program Files (x86)\Plesk\bin\service_plan.exe' --remove "Unlimited"
+& "$env:plesk_bin\service_plan.exe" --remove "Default Simple"
+& "$env:plesk_bin\service_plan.exe" --remove "Unlimited"
 
 echo "Configurando MailEnable..."
 $hostname = [System.Net.Dns]::GetHostByName(($env:computerName)).HostName
