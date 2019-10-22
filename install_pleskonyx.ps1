@@ -14,7 +14,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component panel `
 --install-component awstats `
 --install-component mailenable `
---install-component msdns `
+--install-component dns `
 --install-component spamassassin `
 --install-component mysql-odbc `
 --install-component mylittleadmin `
@@ -33,8 +33,6 @@ echo "Ejecutando instalador de Plesk..."
 --install-component mysql57-client `
 --install-component mysql-odbc53 `
 --install-component modsecurity `
---install-component php54 `
---install-component php55 `
 --install-component php56 `
 --install-component php70 `
 --install-component php71 `
