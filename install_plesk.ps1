@@ -180,12 +180,12 @@ Restart-Service -displayname "*MSSQLSERVER*" -Exclude "*Agent*"
 if ($ISVM) {
         echo "VM detectada, desactivando Health Monitor/Notifier porque consume mucho y se cuelga..."
 	Set-Service ParallelsHealthMonitor -StartupType Disabled
-	Set-Service ParallelsHealthNotifier -StartupType Disabled
+	#Set-Service ParallelsHealthNotifier -StartupType Disabled
 
 	Stop-Service ParallelsHealthMonitor
-	Stop-Service ParallelsHealthNotifier
+	#Stop-Service ParallelsHealthNotifier
 
-	stop-process -name "Parallels.MonitorSrv" -force
+	#stop-process -name "Parallels.MonitorSrv" -force
 }
 
 echo "Configurando paquetes..."
