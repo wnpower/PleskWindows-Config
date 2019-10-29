@@ -11,7 +11,6 @@ $WebClient.DownloadFile( $url , $Output)
 
 echo "Ejecutando instalador de Plesk..."
 &"$Output" --select-product-id=panel --select-release-latest `
---install-component common `
 --install-component panel `
 --install-component awstats `
 --install-component mailenable `
@@ -31,7 +30,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component msodbcsql11 `
 --install-component msodbcsql13 `
 --install-component msodbcsql17 `
---install-component mysql57-client `
+--install-component mariadb103-client `
 --install-component mysql-odbc53 `
 --install-component modsecurity `
 --install-component php56 `
@@ -47,12 +46,12 @@ echo "Ejecutando instalador de Plesk..."
 --install-component git `
 --install-component letsencrypt
 
-$env:plesk_dir = [System.Environment]::GetEnvironmentVariable("plesk_dir") # REFRESH PLESK PATH
-$env:plesk_bin = [System.Environment]::GetEnvironmentVariable("plesk_bin") # REFRESH PLESK PATH
+$env:plesk_dir = [System.Environment]::GetEnvironmentVariable("plesk_dir", "Machine") # REFRESH PLESK PATH
+$env:plesk_bin = $env:plesk_dir + "bin"
 
 $AdminPassword = Read-Host -Prompt 'Password usuario "Administrator" '
 
-echo "Configuración inicial Plesk..."
+echo "ConfiguraciÃ³n inicial Plesk..."
 & "$env:plesk_bin\init_conf.exe" -p -passwd "$AdminPassword" -license_agreed true -admin_info_not_required true
 
 echo "Instalando licencia..."
@@ -62,7 +61,7 @@ Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "fileUpload = on"
 net stop plesksrv
 net start plesksrv
 
-Write-Host -NoNewLine 'En este punto instalá la licencia de Plesk (XML o key) usando el panel web y luego apretá enter...';
+Write-Host -NoNewLine 'En este punto instalÃ¡ la licencia de Plesk (XML o key) usando el panel web y luego apretÃ¡ enter...';
 $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
 
 #& "$env:plesk_bin\license.exe" -i $License
@@ -156,6 +155,7 @@ Register-ScheduledTask -Xml (get-content "C:\Windows\Temp\Plesk Scheduler Task #
 
 echo "Configurando SQL Server..."
 echo "Abriendo puerto 1433 (SQL Express)..."
+$env:PSModulePath = $env:PSModulePath + ";C:\Program Files (x86)\Microsoft SQL Server\140\Tools\PowerShell\Modules"
 Import-Module "sqlps"
 
 $MachineObject = new-object ('Microsoft.SqlServer.Management.Smo.WMI.ManagedComputer') .
@@ -189,8 +189,9 @@ if ($ISVM) {
 }
 
 echo "Configurando paquetes..."
+cmd /c '"%plesk_bin%/service_plan.exe" -c "Default Plan" -hosting true -disk_space 10G -quota 10G -max_traffic 200G -max_dom_aliases 10 -overuse block -disk_space_soft 80% -max_traffic_soft 80% -max_box -1 -mbox_quota 11G -total_mboxes_quota 10G -max_wu 100 -max_subftp_users 20 -max_mysql_db 10 -max_mssql_db 1 -mysql_dbase_space 1G -mssql_dbase_space 1G -mssql_dbase_filesize 500M -mssql_dbase_log_filesize 500M -max_maillists 0 -max_subdom 10 -max_site 1 -max_odbc 10 -max_site_builder 0 -mail true -maillist false -wuscripts true -sb_publish false -ssl true -php false -asp.net true -asp.net_version 4.0 -upsell_site_builder false -webstat awstats -err_docs true -iis_app_pool true -idle_timeout 60 -cpu_usage 20 -max_worker_processes 1 -bandwidth 256K -max_connections 100 -webmail horde -create_domains false -manage_phosting true -manage_php_settings true -manage_php_version true -manage_subdomains true -manage_domain_aliases true -manage_subftp true -manage_crontab true -manage_mail_settings true -manage_maillists false -manage_spamfilter true -manage_virusfilter false -manage_iis_app_pool true -remote_db_connection false -manage_protected_dirs true -manage_website_maintenance false -allow_local_backups true -allow_account_local_backups true -allow_ftp_backups false -allow_account_ftp_backups false -access_appcatalog false -manage_additional_permissions false -webdeploy true -asp true -write_modify false -iis_app_pool_addons false -cpu-usage-action Throttle -log-rotate true -log-bysize 10M -log-max-num-files 5 -log-compress true -keep_traf_stat 3'
 echo "Activando Lets Encrypt en paquete default..."
-& "$env:plesk_bin\service_plan.exe" --add-custom-plan-item "Default Domain" -custom-plan-item-name "urn:ext:letsencrypt:plan-item-sdk:keep-secured"
+cmd /c '"%plesk_bin%/service_plan.exe" --add-custom-plan-item "Default Plan" -custom-plan-item-name "urn:ext:letsencrypt:plan-item-sdk:keep-secured"'
 
 echo "Eliminando paquetes adicionales..."
 & "$env:plesk_bin\service_plan.exe" --remove "Default Simple"
