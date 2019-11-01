@@ -206,5 +206,7 @@ Set-Itemproperty -path 'HKLM:\SOFTWARE\WOW6432Node\Mail Enable\Mail Enable\Conne
 
 Restart-Service -Name "MailEnable SMTP Connector"
 
+echo "Configurando sesión..."
+plesk db "update misc set val=600 where param='login_timeout'"
 
 echo "Finalizado!"
