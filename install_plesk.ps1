@@ -48,6 +48,7 @@ echo "Ejecutando instalador de Plesk..."
 
 $env:plesk_dir = [System.Environment]::GetEnvironmentVariable("plesk_dir", "Machine") # REFRESH PLESK PATH
 $env:plesk_bin = $env:plesk_dir + "bin"
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") # REFRESH PATH
 
 $AdminPassword = Read-Host -Prompt 'Password usuario "Administrator" '
 
@@ -61,7 +62,7 @@ Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "fileUpload = on"
 net stop plesksrv
 net start plesksrv
 
-Write-Host -NoNewLine 'En este punto instalÃ¡ la licencia de Plesk (XML o key) usando el panel web y luego apretÃ¡ enter...';
+Write-Host -NoNewLine 'En este punto instala la licencia de Plesk (XML o key) usando el panel web y luego apreta enter...';
 $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
 
 #& "$env:plesk_bin\license.exe" -i $License
@@ -206,7 +207,7 @@ Set-Itemproperty -path 'HKLM:\SOFTWARE\WOW6432Node\Mail Enable\Mail Enable\Conne
 
 Restart-Service -Name "MailEnable SMTP Connector"
 
-echo "Configurando sesión..."
+echo "Configurando tiempo de session Plesk..."
 plesk db "update misc set val=600 where param='login_timeout'"
 
 echo "Finalizado!"
