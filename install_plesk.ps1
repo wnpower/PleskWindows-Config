@@ -210,4 +210,8 @@ Restart-Service -Name "MailEnable SMTP Connector"
 echo "Configurando tiempo de session Plesk..."
 plesk db "update misc set val=600 where param='login_timeout'"
 
+echo "Limpieza final..."
+Remove-Item (Get-PSReadlineOption).HistorySavePath
+Remove-Item -Path $MyInvocation.MyCommand.Source
+
 echo "Finalizado!"
