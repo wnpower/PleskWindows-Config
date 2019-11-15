@@ -162,6 +162,10 @@ $WebClient.DownloadFile( $url , $Output)
 # IONice
 & "$env:plesk_bin\plesk.exe" "db" "UPDATE misc SET val = 'true' WHERE param = 'bu_nice';"
 
+# Carpetas excluídas
+& "$env:plesk_bin\plesk.exe" "db" "INSERT INTO backupexcludefiles VALUES (1,'/httpdocs/App_Data/cache/*\r\n/httpdocs/App_Data/tmp/*');"
+& "$env:plesk_bin\plesk.exe" "db" "REPLACE INTO backupexcludefiles VALUES (1,'/httpdocs/App_Data/cache/*\r\n/httpdocs/App_Data/tmp/*');"
+
 Register-ScheduledTask -Xml (get-content "C:\Windows\Temp\Plesk Scheduler Task #Domain Backup Scheduler 1.xml" | out-string) -TaskName 'Plesk Scheduler Task #Domain Backup Scheduler 1' -User "SYSTEM"
 
 echo "Configurando SQL Server..."
