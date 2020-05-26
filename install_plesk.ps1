@@ -109,7 +109,7 @@ echo "Configurando mail..."
 & "$env:plesk_bin\spamassassin.exe" --update-server -status true
 
 echo "Configurando php.ini..."
-Get-ChildItem "C:\Program Files (x86)\Plesk\Additional\" -Recurse -Filter "php.ini" |
+Get-ChildItem "$env:plesk_dir\Additional\" -Recurse -Filter "php.ini" |
 Foreach-Object {
 	echo "Procesando "$_.FullName
     $content = Get-Content $_.FullName
