@@ -38,6 +38,8 @@ echo "Ejecutando instalador de Plesk..."
 --install-component php70 `
 --install-component php71 `
 --install-component php72 `
+--install-component php73 `
+--install-component php74 `
 --install-component webdav `
 --install-component dotnetcoreruntime `
 --install-component aspnetcore `
