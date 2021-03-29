@@ -28,7 +28,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component mysql-odbc `
 --install-component mylittleadmin `
 --install-component webalizer `
---install-component mssql2017 `
+--install-component mssql2019 `
 --install-component webmail `
 --install-component plesk-urlprotection `
 --install-component webdeploy `
@@ -39,7 +39,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component msodbcsql11 `
 --install-component msodbcsql13 `
 --install-component msodbcsql17 `
---install-component mariadb103-client `
+--install-component mariadb105-client `
 --install-component mysql-odbc53 `
 --install-component modsecurity `
 --install-component php56 `
@@ -48,6 +48,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component php72 `
 --install-component php73 `
 --install-component php74 `
+--install-component php80 `
 --install-component webdav `
 --install-component dotnetcoreruntime `
 --install-component aspnetcore `
