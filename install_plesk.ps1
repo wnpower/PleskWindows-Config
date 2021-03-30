@@ -258,6 +258,10 @@ $xml.save("$env:PLESK_DIR\MyLittleAdmin\web.config.bak") # BACKUP
 $xml.SelectNodes("//machineKey[.]") | % { $_.ParentNode.RemoveChild($_) }
 $xml.save("$env:PLESK_DIR\MyLittleAdmin\web.config")
 
+echo "Desactivando reglas de Firewall..."
+Disable-NetFirewallRule -DisplayName "MariaDB 10.5 (x64)"
+Disable-NetFirewallRule -DisplayName "Client MySQL server"
+
 echo "Limpieza final..."
 Remove-Item (Get-PSReadlineOption).HistorySavePath
 Remove-Item -Path $MyInvocation.MyCommand.Source
