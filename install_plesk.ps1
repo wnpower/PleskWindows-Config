@@ -263,6 +263,9 @@ Disable-NetFirewallRule -DisplayName "Client MySQL server"
 echo "Instalando SQL Management Studio..."
 choco install sql-server-management-studio
 
+echo "Desactivando extensión Sectigo..."
+plesk bin extension --uninstall sectigo
+
 echo "Limpieza final..."
 Remove-Item (Get-PSReadlineOption).HistorySavePath
 Remove-Item -Path $MyInvocation.MyCommand.Source
