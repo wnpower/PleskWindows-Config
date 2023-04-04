@@ -186,7 +186,7 @@ Register-ScheduledTask -Xml (get-content "C:\Windows\Temp\Plesk Scheduler Task #
 
 echo "Configurando SQL Server..."
 echo "Abriendo puerto 1433 (SQL Express)..."
-$env:PSModulePath = $env:PSModulePath + ";C:\Program Files (x86)\Microsoft SQL Server\140\Tools\PowerShell\Modules"
+$env:PSModulePath = $env:PSModulePath + ";C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules"
 Import-Module "sqlps"
 
 $MachineObject = new-object ('Microsoft.SqlServer.Management.Smo.WMI.ManagedComputer') .
@@ -261,7 +261,7 @@ Disable-NetFirewallRule -DisplayName "MariaDB 10.6 (x64)"
 Disable-NetFirewallRule -DisplayName "Client MySQL server"
 
 echo "Instalando SQL Management Studio..."
-choco install sql-server-management-studio
+choco install sql-server-management-studio -y
 
 echo "Desactivando extensión Sectigo..."
 plesk bin extension --uninstall sectigo
