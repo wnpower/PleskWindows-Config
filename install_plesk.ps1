@@ -115,7 +115,7 @@ echo "Configurando mail..."
 & "$env:plesk_cli\mailserver.exe" --enable-outgoing-antispam
 & "$env:plesk_cli\mailserver.exe" --set-outgoing-messages-subscription-limit 200
 & "$env:plesk_cli\mailserver.exe" --set-outgoing-messages-domain-limit 200
-& "$env:plesk_cli\mailserver.exe" --set-maps-zone "zen.spamhaus.org,bl.spamcop.net,b.barracudacentral.org"
+& "$env:plesk_cli\mailserver.exe" --set-maps-zone "bl.spamcop.net,b.barracudacentral.org"
 & "$env:plesk_cli\mailserver.exe" --set-maps-status true
 & "$env:plesk_cli\spamassassin.exe" --update-server -status true
 
