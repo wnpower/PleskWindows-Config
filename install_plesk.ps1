@@ -28,7 +28,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component mysql-odbc `
 --install-component mylittleadmin `
 --install-component webalizer `
---install-component mssql2019 `
+--install-component mssql2022 `
 --install-component webmail `
 --install-component plesk-urlprotection `
 --install-component webdeploy `
