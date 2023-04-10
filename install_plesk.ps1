@@ -42,6 +42,7 @@ echo "Ejecutando instalador de Plesk..."
 --install-component mariadb106-client `
 --install-component mysql-odbc53 `
 --install-component modsecurity `
+--install-component php73 `
 --install-component php74 `
 --install-component php80 `
 --install-component php81 `
