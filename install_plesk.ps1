@@ -18,42 +18,52 @@ $Output = "C:\Windows\Temp\plesk-installer.exe"
 $WebClient = New-Object System.Net.WebClient
 $WebClient.DownloadFile( $url , $Output)
 
-echo "Ejecutando instalador de Plesk..."
-&"$Output" --select-product-id=panel --select-release-latest `
---install-component panel `
---install-component awstats `
---install-component mailenable `
---install-component dns `
---install-component spamassassin `
---install-component mysql-odbc `
---install-component mylittleadmin `
---install-component webalizer `
---install-component mssql2022 `
---install-component webmail `
---install-component plesk-urlprotection `
---install-component webdeploy `
---install-component urlrewrite `
---install-component health-monitoring `
---install-component gitforwindows `
---install-component plesk-migration-manager `
---install-component msodbcsql11 `
---install-component msodbcsql13 `
---install-component msodbcsql17 `
---install-component mariadb106-client `
---install-component mysql-odbc53 `
---install-component modsecurity `
---install-component php73 `
---install-component php74 `
---install-component php80 `
---install-component php81 `
---install-component webdav `
---install-component dotnetcoreruntime `
---install-component aspnetcore `
---install-component appinit `
---install-component http-dynamic-compression `
---install-component git `
---install-component sslit `
---install-component letsencrypt
+function installPlesk {
+	echo "Ejecutando instalador de Plesk..."
+
+        #--install-component php73 ` # Evitamos PHP en Plesk. Si queremos agregarlo agregamos estoas lineas (actualizando la versión de PHP que queremos)
+        #--install-component php74 `
+        #--install-component php80 `
+        #--install-component php81 `
+
+	&"$Output" --select-product-id=panel --select-release-latest `
+	--install-component panel `
+	--install-component awstats `
+	--install-component mailenable `
+	--install-component dns `
+	--install-component spamassassin `
+	--install-component mysql-odbc `
+	--install-component mylittleadmin `
+	--install-component webalizer `
+	--install-component mssql2022 `
+	--install-component webmail `
+	--install-component plesk-urlprotection `
+	--install-component webdeploy `
+	--install-component urlrewrite `
+	--install-component health-monitoring `
+	--install-component gitforwindows `
+	--install-component plesk-migration-manager `
+	--install-component msodbcsql11 `
+	--install-component msodbcsql13 `
+	--install-component msodbcsql17 `
+	--install-component mariadb1011-client `
+	--install-component mysql-odbc53 `
+	--install-component modsecurity `
+	--install-component webdav `
+	--install-component dotnetcoreruntime `
+	--install-component aspnetcore `
+	--install-component appinit `
+	--install-component http-dynamic-compression `
+	--install-component git `
+	--install-component sslit `
+	--install-component letsencrypt
+}
+
+installPlesk # instalo Plesk
+&"$Output" update # actualizo
+installPlesk # vuelvo a ejecutar instalador porque a veces no instala algunas cosas en el primero
+
+plesk repair all -y # A veces ya inicia roto asi que lo arreglo
 
 $env:plesk_dir = [System.Environment]::GetEnvironmentVariable("plesk_dir", "Machine") # REFRESH PLESK PATH
 $env:plesk_cli = $env:plesk_dir + "bin"
@@ -258,7 +268,7 @@ $xml.SelectNodes("//machineKey[.]") | % { $_.ParentNode.RemoveChild($_) }
 $xml.save("$env:PLESK_DIR\MyLittleAdmin\web.config")
 
 echo "Desactivando reglas de Firewall..."
-Disable-NetFirewallRule -DisplayName "MariaDB 10.6 (x64)"
+Disable-NetFirewallRule -DisplayName "MariaDB*"
 Disable-NetFirewallRule -DisplayName "Client MySQL server"
 
 echo "Instalando SQL Management Studio..."
