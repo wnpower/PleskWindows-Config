@@ -63,11 +63,11 @@ installPlesk # instalo Plesk
 &"$Output" update # actualizo
 installPlesk # vuelvo a ejecutar instalador porque a veces no instala algunas cosas en el primero
 
-plesk repair all -y # A veces ya inicia roto asi que lo arreglo
-
 $env:plesk_dir = [System.Environment]::GetEnvironmentVariable("plesk_dir", "Machine") # REFRESH PLESK PATH
 $env:plesk_cli = $env:plesk_dir + "bin"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") # REFRESH PATH
+
+plesk repair all -y # A veces ya inicia roto asi que lo arreglo
 
 $AdminPassword = Read-Host -Prompt 'Password usuario "Administrator" '
 
@@ -258,14 +258,6 @@ echo "Configurando notificaciones SSL..."
 & "$env:plesk_cli\notification.exe" --update -code ext-letsencrypt-notification-certificateAutoRenewalFailed -send2admin false -send2reseller false -send2client false -send2email false
 & "$env:plesk_cli\notification.exe" --update -code ext-sslit-notification-certificateAutoRenewalSucceed -send2admin false -send2reseller false -send2client false -send2email false
 & "$env:plesk_cli\notification.exe" --update -code ext-sslit-notification-certificateAutoRenewalFailed -send2admin false -send2reseller false -send2client false -send2email false
-
-echo "Reparando CVE MyLittleAdmin..."
-# https://support.plesk.com/hc/en-us/articles/360013996240-CVE-2020-13166-myLittleAdmin-vulnerability
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") # REFRESH PATH
-[xml]$xml = Get-Content "$env:PLESK_DIR\MyLittleAdmin\web.config"
-$xml.save("$env:PLESK_DIR\MyLittleAdmin\web.config.bak") # BACKUP
-$xml.SelectNodes("//machineKey[.]") | % { $_.ParentNode.RemoveChild($_) }
-$xml.save("$env:PLESK_DIR\MyLittleAdmin\web.config")
 
 echo "Desactivando reglas de Firewall..."
 Disable-NetFirewallRule -DisplayName "MariaDB*"
