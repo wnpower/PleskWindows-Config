@@ -69,14 +69,14 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 
 plesk repair all -y # A veces ya inicia roto asi que lo arreglo
 
-$AdminPassword = Read-Host -Prompt 'Password usuario "Administrator" '
+$AdminPassword = Read-Host -Prompt 'Password usuario "admin" Plesk '
 
 echo "Configuracion inicial Plesk..."
 & "$env:plesk_cli\init_conf.exe" -p -passwd "$AdminPassword" -license_agreed true -admin_info_not_required true
 
-echo "Instalando licencia..."
-Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "[license]"
-Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "fileUpload = on"
+#echo "Instalando licencia..." # No se usa mas
+#Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "[license]"
+#Add-Content -Path "$env:plesk_dir\admin\conf\panel.ini" -Value "fileUpload = on"
 
 net stop plesksrv
 net start plesksrv
@@ -179,9 +179,9 @@ $WebClient = New-Object System.Net.WebClient
 $WebClient.DownloadFile( $url , $Output)
 
 # BACKUP - HECHO A MANO VIENDO LA DB NO HAY INFO EN INTERNET
-& "$env:plesk_cli\plesk.exe" "db" "INSERT INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',1,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',2592000,1,1,1,NULL);"
+& "$env:plesk_cli\plesk.exe" "db" "INSERT INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',1,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',2592000,1,1,1,NULL,0,0,0);"
 
-& "$env:plesk_cli\plesk.exe" "db" "REPLACE INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',1,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',2592000,1,1,1,NULL);" # Replace por si existe
+& "$env:plesk_cli\plesk.exe" "db" "REPLACE INTO backupsscheduled VALUES (1,1,'server','local','2018-07-18 10:38:16',86400,'true','false',1,'','',0,'false','true',0,'23:00:00','backup_content_all_at_domain',2592000,1,1,1,NULL,0,0,0);" # Replace por si existe
 
 # Número máximo de archivos de backup completo a almacenar (incluyendo tanto los backups programados como los manuales)
 & "$env:plesk_cli\plesk.exe" "db" "UPDATE misc SET val = '30' WHERE param = 'bu_rotation';"
