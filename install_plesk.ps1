@@ -196,28 +196,45 @@ $WebClient.DownloadFile( $url , $Output)
 Register-ScheduledTask -Xml (get-content "C:\Windows\Temp\Plesk Scheduler Task #Domain Backup Scheduler 1.xml" | out-string) -TaskName 'Plesk Scheduler Task #Domain Backup Scheduler 1' -User "SYSTEM"
 
 echo "Configurando SQL Server..."
-echo "Abriendo puerto 1433 (SQL Express)..."
-$env:PSModulePath = $env:PSModulePath + ";C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules"
-Import-Module "sqlps"
+Write-Host "Configurando SQL Server..."
 
-$MachineObject = new-object ('Microsoft.SqlServer.Management.Smo.WMI.ManagedComputer') .
+# Obtener la primera instancia instalada
+$instances = Get-Item 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
 
-$serverinstance = $MachineObject | select-object -expand ServerInstances | select-object -expand Name
-$ProtocolUri = "ManagedComputer[@Name='" + (get-item env:computername).Value + "']/ServerInstance[@Name='$serverinstance']/ServerProtocol"
+if ($instances.GetValueNames().Count -eq 0) {
+    throw "No se encontraron instancias de SQL Server."
+}
 
-$tcp = $MachineObject.getsmoobject($ProtocolUri + "[@Name='Tcp']")
-$np = $MachineObject.getsmoobject($ProtocolUri + "[@Name='Np']")
-$sm = $MachineObject.getsmoobject($ProtocolUri + "[@Name='Sm']")
+$instanceName = $instances.GetValueNames()[0]
+$instanceId   = $instances.GetValue($instanceName)
 
-$np.IsEnabled = $true
-$np.alter()
-$tcp.IsEnabled = $true
-$tcp.alter()
+Write-Host "Instancia: $instanceName"
+Write-Host "Instance ID: $instanceId"
 
-$MachineObject.getsmoobject($tcp.urn.Value + "/IPAddress[@Name='IPAll']").IPAddressProperties[1].Value = "1433"
-$tcp.alter()
+$base = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\MSSQLServer\SuperSocketNetLib"
 
-Restart-Service -displayname "*MSSQLSERVER*" -Exclude "*Agent*"
+# Habilitar TCP/IP
+Write-Host "Habilitando TCP/IP..."
+Set-ItemProperty "$base\Tcp" -Name Enabled -Value 1
+
+# Configurar puerto fijo 1433
+Write-Host "Configurando puerto TCP 1433..."
+Set-ItemProperty "$base\Tcp\IPAll" -Name TcpDynamicPorts -Value ""
+Set-ItemProperty "$base\Tcp\IPAll" -Name TcpPort -Value "1433"
+
+# Habilitar Named Pipes
+Write-Host "Habilitando Named Pipes..."
+Set-ItemProperty "$base\Np" -Name Enabled -Value 1
+
+# Reiniciar el servicio
+$service = if ($instanceName -eq "MSSQLSERVER") {
+    "MSSQLSERVER"
+} else {
+    "MSSQL`$$instanceName"
+}
+
+Write-Host "Reiniciando servicio $service..."
+Restart-Service -Name $service -Force
 
 if ($ISVM) {
         echo "VM detectada, desactivando Health Monitor/Notifier porque consume mucho y se cuelga..."
