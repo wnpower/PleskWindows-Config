@@ -286,10 +286,20 @@ choco install sql-server-management-studio -y
 echo "Desactivando extensión Sectigo..."
 plesk bin extension --uninstall sectigo
 
-# https://support.plesk.com/hc/en-us/articles/42139500580119-Vulnerability-CVE-2026-58046-Blind-SQL-injection-in-Plesk-s-XML-RPC-API
-echo "Fix CVE-2026-58046..."
-$iniPath = "$env:plesk_dir\admin\conf\panel.ini"
-Set-Content -Path $iniPath -Value "[api]`r`ndeprecationError = on"
+# Fixes varios CVEs y config panel.ini
+echo "Configurando panel.ini..."
+
+@"
+[api]
+deprecationError = on
+deprecated_protocols_allowed = true
+
+[login]
+systemAdmin = off
+
+[product]
+noFun = true
+"@ | Set-Content "$env:plesk_dir\admin\conf\panel.ini"
 
 Restart-Service -Name "plesksrv" -Verbose
 
